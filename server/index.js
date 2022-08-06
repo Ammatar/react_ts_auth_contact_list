@@ -77,9 +77,6 @@ app.post('/auth/login', async (req, res) => {
       .json({ token: `${user.password}_${user.username}_${Date.now()}` });
   }
 });
-app.post('/auth/check', (req, res) => {
-  // if authed
-});
 //
 // contact list service
 //
