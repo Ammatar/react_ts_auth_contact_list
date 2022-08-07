@@ -34,10 +34,6 @@ const App = observer(() => {
 
   const [filter, setFilter] = React.useState('');
 
-  function submitLogin(event: React.FormEvent<HTMLInputElement>) {
-    event.preventDefault();
-    console.log(event.target);
-  }
   React.useEffect(() => {
     store.getAllContacts();
     setLogged(store.token ? true : false);

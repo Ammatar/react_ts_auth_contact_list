@@ -1,7 +1,7 @@
 .app__container {
   width: 80%;
   @media screen and (max-width: 530px) {
-    width: 100%;
+    width: 90%;
   }
   height: 100vh;
   margin: 0 auto;
@@ -24,9 +24,6 @@ nav {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    & button {
-      //   margin-left: 20px !important;
-    }
     & div > input {
       padding-left: 20px !important;
     }
