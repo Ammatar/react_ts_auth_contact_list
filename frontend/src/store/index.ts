@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-let host = process.env.MODE === 'production' ? '' : `http://localhost:3010`;
+let host = window.location.port !== '3100' ? `http://localhost:3010` : '';
 
 interface IContact {
   id: number;
@@ -14,6 +14,7 @@ class Store {
   constructor() {
     makeAutoObservable(this);
     this.tokenRecover();
+    console.log();
   }
   getUser() {
     if (this.token) {
@@ -55,10 +56,15 @@ class Store {
       }),
     });
     const { token } = await res.json();
-    this.getAllContacts();
-    localStorage.setItem('token', token);
-    this.tokenRecover();
-    return true;
+    if (res.status === 200 && token !== '') {
+      this.getAllContacts();
+      localStorage.setItem('token', token);
+      this.tokenRecover();
+      return true;
+    } else {
+      console.log('Wrong credentials');
+      return false;
+    }
   }
   async logout() {
     this.resetContacts();

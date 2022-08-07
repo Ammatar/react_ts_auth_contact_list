@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "deploy": "npm i && cd ../frontend && npm i && MODE=production npm run build && cd ../server && PORT=3010 npm run start"
+    "deploy": "npm i && cd ../frontend && npm i && npm run build && cd ../server && npm run start"
   },
   "author": "",
   "license": "ISC",

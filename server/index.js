@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const PORT = process.env.PORT;
+const PORT = 3010;
 const path = require('path');
 
 //
@@ -75,6 +75,8 @@ app.post('/auth/login', async (req, res) => {
     res
       .status(200)
       .json({ token: `${user.password}_${user.username}_${Date.now()}` });
+  } else {
+    res.status(200).json({ token: '' });
   }
 });
 //

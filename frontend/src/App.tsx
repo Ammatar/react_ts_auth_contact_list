@@ -4,6 +4,9 @@ import { observer } from 'mobx-react-lite';
 import { store } from './store';
 import Contact from './components/Contact';
 
+import Button from '@mui/material/Button';
+import Input from '@mui/material/Input';
+
 const App = observer(() => {
   const [contacts, setContacts] = React.useState<
     | [
@@ -24,10 +27,17 @@ const App = observer(() => {
   const [login, setLogin] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
 
+  const [error, setError] = React.useState<string>('');
+
   const [name, setName] = React.useState<string>('');
   const [phone, setPhone] = React.useState<string>('');
 
   const [filter, setFilter] = React.useState('');
+
+  function submitLogin(event: React.FormEvent<HTMLInputElement>) {
+    event.preventDefault();
+    console.log(event.target);
+  }
   React.useEffect(() => {
     store.getAllContacts();
     setLogged(store.token ? true : false);
@@ -39,6 +49,7 @@ const App = observer(() => {
   }, [logged]);
   React.useEffect(() => {
     setContacts(store.getContactState());
+    // eslint-disable-next-line
   }, [store.contacts]);
   return (
     <div className='app__container'>
@@ -47,24 +58,37 @@ const App = observer(() => {
         {logged ? <> for {store.getUser()}</> : null}
         {logged ? (
           <div className='nav__controls'>
-            <button onClick={() => setNewForm(true)}>create new</button>
+            <Button
+              variant='outlined'
+              size='small'
+              onClick={() => setNewForm(true)}
+            >
+              new
+            </Button>
+            <Button
+              variant='outlined'
+              size='small'
+              onClick={async () => setLogged(await store.logout())}
+            >
+              Logout
+            </Button>
             {logged && newForm ? (
               <div className='newContact__form'>
-                <input
+                <Input
                   placeholder='name'
                   value={name}
                   onChange={(e) => {
                     setName(e.target.value);
                   }}
                 />
-                <input
+                <Input
                   placeholder='phone'
                   value={phone}
                   onChange={(e) => {
                     setPhone(e.target.value);
                   }}
                 />
-                <button
+                <Button
                   onClick={() => {
                     store.createNewContact(name, phone);
                     setName('');
@@ -73,64 +97,88 @@ const App = observer(() => {
                   }}
                 >
                   apply
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => {
                     setName('');
                     setPhone('');
                     setNewForm(false);
                   }}
                 >
-                  chancel
-                </button>
+                  cancel
+                </Button>
               </div>
             ) : null}
-            <button onClick={async () => setLogged(await store.logout())}>
-              Logout
-            </button>
           </div>
         ) : (
           <div>
-            <input
-              placeholder='Your login > 3 chars'
-              value={login}
-              onChange={(e) => {
-                setLogin(e.target.value);
-              }}
-            />
-            <input
-              placeholder='Your pass > 3 chars'
-              type='password'
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            />
-            <button
-              onClick={async () => {
-                setLogged(await store.login(login, password));
-                setLogin('');
-                setPassword('');
+            {error ? <div className='error__box'>{error}</div> : null}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
               }}
             >
-              Login
-            </button>
-            {/* {' or '} */}
-            <button
-              onClick={() => {
-                store.register(login, password);
-              }}
-              disabled={login.length < 3 || password.length < 3 ? true : false}
-            >
-              Register
-            </button>
+              <div className='input__box'>
+                <Input
+                  placeholder='Your login > 3 chars'
+                  value={login}
+                  onChange={(e) => {
+                    setLogin(e.target.value);
+                  }}
+                  className={error ? 'error' : ''}
+                />
+                <Input
+                  placeholder='Your pass > 3 chars'
+                  type='password'
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                  className={error ? 'error' : ''}
+                />
+              </div>
+              <Button
+                variant='outlined'
+                size='small'
+                className='control_button'
+                type='submit'
+                onClick={async () => {
+                  const result = await store.login(login, password);
+                  // console.log(result);
+
+                  setLogged(result);
+                  if (result) {
+                    setLogin('');
+                    setPassword('');
+                    setError('');
+                  } else {
+                    setError('Wrong credentials provided');
+                  }
+                }}
+              >
+                Login
+              </Button>
+              {/* {' or '} */}
+              <Button
+                variant='outlined'
+                size='small'
+                onClick={() => {
+                  store.register(login, password);
+                }}
+                disabled={
+                  login.length < 3 || password.length < 3 ? true : false
+                }
+              >
+                Register
+              </Button>
+            </form>
           </div>
         )}
       </nav>
       <main>
-        <div>
+        <div className='filter__box'>
           {logged ? (
-            <input
+            <Input
               type='text'
               placeholder='Filter'
               value={filter}
